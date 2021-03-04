@@ -1,0 +1,16 @@
+{
+    "name": "neistow/phpmvc",
+    "authors": [
+        {
+            "name": "neistow",
+            "email": "contact@neistow.codes"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "app\\": "./"
+        }
+    },
+    "require": {},
+    "description": ""
+}
