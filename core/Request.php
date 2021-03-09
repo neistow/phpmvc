@@ -27,4 +27,13 @@ class Request
     {
         return $this->getMethod() === 'get' ? $_GET : $_POST;
     }
+
+    public function getAuthCookie()
+    {
+        if (!isset($_COOKIE['Auth'])) {
+            return null;
+        }
+
+        return $_COOKIE['Auth'];
+    }
 }
