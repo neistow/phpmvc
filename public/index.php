@@ -42,13 +42,13 @@ $app->router->mapPost("/film-actors/delete", ["controller" => FilmActorsControll
 $guard = new GuardMiddleware();
 $guard->addGuard("/admin", "get");
 
-$guard->addGuard("/films/edit", "get");
-$guard->addGuard("/films/edit", "post");
-$guard->addGuard("/films/delete", "post");
+$guard->addGuard("/films/edit", "get", "editor");
+$guard->addGuard("/films/edit", "post", "editor");
+$guard->addGuard("/films/delete", "post", "editor");
 
-$guard->addGuard("/actors/edit", "get");
-$guard->addGuard("/actors/edit", "post");
-$guard->addGuard("/actors/delete", "post");
+$guard->addGuard("/actors/edit", "get", "super_admin");
+$guard->addGuard("/actors/edit", "post", "super_admin");
+$guard->addGuard("/actors/delete", "post", "super_admin");
 
 $guard->addGuard("/film-actors/edit", "get");
 $guard->addGuard("/film-actors/create", "get");

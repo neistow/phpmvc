@@ -5,6 +5,7 @@ namespace app\middleware;
 
 use app\core\Application;
 use app\core\MiddlewareBase;
+use app\repositories\UserRolesRepository;
 use app\repositories\UserSecretsRepository;
 use app\repositories\UsersRepository;
 use Exception;
@@ -18,9 +19,9 @@ class GuardMiddleware extends MiddlewareBase
         $this->protectedActions = array();
     }
 
-    public function addGuard($path, $method)
+    public function addGuard($path, $method, $role = "*")
     {
-        $this->protectedActions[$method][$path] = true;
+        $this->protectedActions[$method][$path] = [true, $role];
     }
 
     public function processBefore($request, $response)
@@ -32,6 +33,15 @@ class GuardMiddleware extends MiddlewareBase
 
         if ($cookie != null) {
             $user = $this->verifyCookie($cookie);
+
+            if(isset($this->protectedActions[$request->getMethod()][$request->getPath()])){
+                $required_role = $this->protectedActions[$request->getMethod()][$request->getPath()][1];
+
+                if ($required_role != "*" && !$user->user_in_role($required_role) && !$user->user_in_role("super_admin")) {
+                    throw new Exception("You don't have permission to enter here, mortal");
+                }
+            }
+
             Application::$GlobalThis->user = $user;
         }
     }
@@ -56,6 +66,9 @@ class GuardMiddleware extends MiddlewareBase
         if ($secret[1] != explode(';', $cookie)[1]) {
             throw new Exception("Invalid cookie");
         }
+
+        $roleRepo = new UserRolesRepository(Application::$GlobalThis->database);
+        $user->roles = $roleRepo->getUserRoles($user->id);
 
         return $user;
     }
